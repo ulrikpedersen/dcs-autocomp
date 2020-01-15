@@ -1,0 +1,5 @@
+BL16B-VA-IOC-01 /dls_sw/work/R3.14.11/ioc/BL16B/VA/bin/linux-x86/stBL16B-VA-SIM-01.boot
+BL12I-EA-IOC-01 /dls_sw/work/R3.14.11/ioc/BL12I/EA/bin/vxWorks-ppc604_long/stBL12I-EA-IOC-01.boot
+BL12I-DI-IOC-02 /dls_sw/work/R3.14.11/ioc/BL12I/BL12I-DI-IOC-02/bin/linux-x86/stBL12I-EA-IOC-02.boot
+BL12I-EA-IOC-05 /dls_sw/work/R3.14.11/ioc/BL12I/EA/bin/vxWorks-ppc604_long/stBL12I-EA-IOC-05.boot
+BL16B-MO-IOC-01 /dls_sw/work/R3.14.11/ioc/BL16B/MO/bin/vxWorks-ppc604_long/stBL16B-MO-IOC-01.boot

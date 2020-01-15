@@ -1,0 +1,34 @@
+record(ao, "BL12I-DI-PHDGN-01:INFO:NFLOW") {
+  field(VAL, "0")
+  field(PINI, "YES")
+}
+
+#record(ao, "BL12I-BLAH-BLUH:COMMENTED") {
+#  field(VAL, "0")
+#  field(PINI, "YES")
+#}
+
+record(scalcout, "BL12I-MO-IOC-01:SCAN:CHKD02") {
+  field(CALC, "(AA!=BB)&&(AA!=CC)?AA")
+  field(OUT, "BL12I-MO-IOC-01:SCAN:FAND02.STR1 PP")
+  field(BB, "BL12I-MO-IOC-01:SCAN:STRD02.VAL")
+  field(CC, "BL12I-MO-IOC-01:SCAN:STRD02")
+  field(OOPT, "Every Time")
+}
+
+record(scalcout, "BL12I-MO-IOC-01:SCAN:CHKD02") {
+  field(CALC, "(AA!=BB)&&(AA!=CC)?AA")
+  field(OUT, "BL12I-MO-IOC-01:SCAN:FAND02.STR1 PP")
+  field(BB, "BL12I-MO-IOC-01:SCAN:STRD02.VAL")
+  field(CC, "BL12I-MO-IOC-01:SCAN:STRD02")
+  field(OOPT, "Every Time")
+}
+
+
+record(sseq, "BL12I-OP-DCM-01:XTAL1:SCAN:FANT1") {
+  field(LNK1, "BL12I-OP-DCM-01:XTAL1:SCAN:UPT1.STR9 PP")
+  field(DOL2, "BL12I-OP-DCM-01:XTAL1:SCAN:CHKT1.SVAL")
+  field(LNK2, "BL12I-OP-DCM-01:XTAL1:SCAN:STRT1 PP")
+  field(DOL3, "BL12I-OP-DCM-01:XTAL1:SCAN:CHKT1.SVAL")
+  field(LNK3, "BL12I-OP-DCM-01:XTAL1:SCAN.T1PV")
+}
