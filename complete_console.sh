@@ -4,9 +4,8 @@
 FULLSCRIPTNAME="${BASH_ARGV[0]}"
 INSTALL_DIR=$( dirname ${FULLSCRIPTNAME} )
 
-_RHEL_VERSION=$( uname -r | grep -o 'el[0-9]' )
+_RHEL_VERSION=$(/usr/bin/lsb_release -sr | cut -d. -f1)
 
-#_dcs_compgen=${INSTALL_DIR}/RHEL6/db_rec_names
 _dcs_compgen=${INSTALL_DIR}/dcs_compgen
 _redirect_table=/dls_sw/prod/etc/redirector/redirect_table
 
