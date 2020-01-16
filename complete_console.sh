@@ -9,15 +9,16 @@ _RHEL_VERSION=$(/usr/bin/lsb_release -sr | cut -d. -f1)
 _dcs_compgen=${INSTALL_DIR}/dcs_compgen
 _redirect_table=/dls_sw/prod/etc/redirector/redirect_table
 
-_dcs_list_support_modules()
-{
-    echo $(svn ls "${SVN_ROOT}/diamond/trunk/support" | tr -d / | sort )
-}
-
-_dcs_list_module_versions()
-{
-    echo $(svn ls "${SVN_ROOT}/diamond/release/support/$1" | tr -d / | sort )
-}
+# TODO: fix to use gitlab to get list of support modules and releases
+#_dcs_list_support_modules()
+#{
+#    echo $(svn ls "${SVN_ROOT}/diamond/trunk/support" | tr -d / | sort )
+#}
+#
+#_dcs_list_module_versions()
+#{
+#    echo $(svn ls "${SVN_ROOT}/diamond/release/support/$1" | tr -d / | sort )
+#}
 
 _dcs_list_domains()
 {
@@ -47,20 +48,21 @@ _dcs_tab_complete_iocs()
     return 0
 }
 
-_dcs_tab_complete_modules()
-{
-    local cur prev arg
-    COMREPLY=()
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    
-    arg=$(_dcs_list_support_modules)
-	# Case sensitive version using standard compgen
-    #COMPREPLY=( $(compgen -W "${arg}" -- ${cur}) ) 
-	# Case insensitive version using custom cis_compgen
-    COMPREPLY=( $(${_dcs_compgen} -W "${arg}" -- ${cur}) )
-    return 0
-}
+# Commented because it uses svn to get a list of support modules
+#_dcs_tab_complete_modules()
+#{
+#    local cur prev arg
+#    COMREPLY=()
+#    cur="${COMP_WORDS[COMP_CWORD]}"
+#    prev="${COMP_WORDS[COMP_CWORD-1]}"
+#
+#    arg=$(_dcs_list_support_modules)
+#	# Case sensitive version using standard compgen
+#    #COMPREPLY=( $(compgen -W "${arg}" -- ${cur}) )
+#	# Case insensitive version using custom cis_compgen
+#    COMPREPLY=( $(${_dcs_compgen} -W "${arg}" -- ${cur}) )
+#    return 0
+#}
 
 
 # Will tab-complete on up to three subsequent arguments: module [version [version]]
@@ -74,101 +76,101 @@ _dcs_tab_complete_modules()
 #   -i, --ioc             set <area>='ioc'
 #   -v, --verbose         Print lots of log information
 #   -r, --raw             Print raw text (not in colour)
-_dls_logs_since_release()
-{
-    local cur prev arg opts support_module
-    COMREPLY=()
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    
-    # Options first
-    opts="-h --help -a --area -p --python -i --ioc -v --verbose -r --raw"
-    if [[ ${cur} == -* ]] ; then
-        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
-        return 0
-    fi
-        
-    case "${prev}" in
-        "-a"|"--area")
-            areas="support ioc matlab python etc tools epics"
-            COMPREPLY=( $( compgen -W "${areas}" -- ${cur}) )
-            return 0
-            ;;
-    esac
-    
-    #echo " prev= ${prev} "
-    #echo " SUP= ${DCS_SUPPORT_MODULE} "
-    if [[ ${#COMP_WORDS[*]} -gt 2 ]] ; then
-        if [ "$DCS_SUPPORT_MODULE" = "${COMP_WORDS[COMP_CWORD-2]}" ] ; then
-            
-            versions=$( _dcs_list_module_versions ${COMP_WORDS[COMP_CWORD-2]} )
-            COMPREPLY=( $(compgen -W "${versions}" -- ${cur}) )
-            unset $DCS_SUPPORT_MODULE
-            return 0
-        fi
-    fi 
-    if [ "$DCS_SUPPORT_MODULE" = "${prev}" ] ; then
-        versions=$( _dcs_list_module_versions ${prev} )
-        COMPREPLY=( $(compgen -W "${versions}" -- ${cur}) )
-        #unset $DCS_SUPPORT_MODULE
-    else
-        support_modules=$( _dcs_list_support_modules )
-        COMPREPLY=( $(${_dcs_compgen} -W "${support_modules}" ${cur}) )
-        if [[ ${#COMPREPLY[*]} -eq 1 ]] ; then
-            export DCS_SUPPORT_MODULE="${COMPREPLY[0]}"
-        fi
-    fi
-    
-    return 0    
-}
+#_dls_logs_since_release()
+#{
+#    local cur prev arg opts support_module
+#    COMREPLY=()
+#    cur="${COMP_WORDS[COMP_CWORD]}"
+#    prev="${COMP_WORDS[COMP_CWORD-1]}"
+#
+#    # Options first
+#    opts="-h --help -a --area -p --python -i --ioc -v --verbose -r --raw"
+#    if [[ ${cur} == -* ]] ; then
+#        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+#        return 0
+#    fi
+#
+#    case "${prev}" in
+#        "-a"|"--area")
+#            areas="support ioc matlab python etc tools epics"
+#            COMPREPLY=( $( compgen -W "${areas}" -- ${cur}) )
+#            return 0
+#            ;;
+#    esac
+#
+#    #echo " prev= ${prev} "
+#    #echo " SUP= ${DCS_SUPPORT_MODULE} "
+#    if [[ ${#COMP_WORDS[*]} -gt 2 ]] ; then
+#        if [ "$DCS_SUPPORT_MODULE" = "${COMP_WORDS[COMP_CWORD-2]}" ] ; then
+#
+#            versions=$( _dcs_list_module_versions ${COMP_WORDS[COMP_CWORD-2]} )
+#            COMPREPLY=( $(compgen -W "${versions}" -- ${cur}) )
+#            unset $DCS_SUPPORT_MODULE
+#            return 0
+#        fi
+#    fi
+#    if [ "$DCS_SUPPORT_MODULE" = "${prev}" ] ; then
+#        versions=$( _dcs_list_module_versions ${prev} )
+#        COMPREPLY=( $(compgen -W "${versions}" -- ${cur}) )
+#        #unset $DCS_SUPPORT_MODULE
+#    else
+#        support_modules=$( _dcs_list_support_modules )
+#        COMPREPLY=( $(${_dcs_compgen} -W "${support_modules}" ${cur}) )
+#        if [[ ${#COMPREPLY[*]} -eq 1 ]] ; then
+#            export DCS_SUPPORT_MODULE="${COMPREPLY[0]}"
+#        fi
+#    fi
+#
+#    return 0
+#}
 
-_dcs_tab_complete_dls_release()
-{
-    local cur prev arg opts support_module
-    COMREPLY=()
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    
-    # Options first
-    opts="--help--area --python --ioc --branch --force --no-test-build --local-build-only --test_build-only --work_build --epics_version --message --next_version --rhel_version --windows"
-    if [[ ${cur} == -* ]] ; then
-        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
-        return 0
-    fi
-        
-    case "${prev}" in
-        "-a"|"--area")
-            areas="support ioc matlab python etc tools epics"
-            COMPREPLY=( $( compgen -W "${areas}" -- ${cur}) )
-            return 0
-            ;;
-        "-b"|"--branch")
-            return 0;
-            ;;
-        "-e"|"--epics_version")
-            epics_releases="R3.14.11 R3.14.12.1 R3.14.12.2 R3.14.12.3"
-            COMPREPLY=( $( compgen -W "${epics_releases}" -- ${cur}) )
-            return 0
-            ;;
-        "-m"|"--message")
-            return 0
-            ;;
-        "-r"|"--rhel_version")
-            rhel_versions="4 5 5_64 6"
-            COMPREPLY=( $( compgen -W "${rhel_versions}" -- ${cur}) )
-            return 0
-            ;;
-        "-w"|"--windows")
-            win_versions="32 64"
-            COMPREPLY=( $( compgen -W "${win_versions}" -- ${cur}) )
-            return 0
-            ;;
-    esac
-
-    support_modules=$( _dcs_list_support_modules )
-    COMPREPLY=( $(${_dcs_compgen} -W "${support_modules}" ${cur}) )
-    return 0
-}
+#_dcs_tab_complete_dls_release()
+#{
+#    local cur prev arg opts support_module
+#    COMREPLY=()
+#    cur="${COMP_WORDS[COMP_CWORD]}"
+#    prev="${COMP_WORDS[COMP_CWORD-1]}"
+#
+#    # Options first
+#    opts="--help--area --python --ioc --branch --force --no-test-build --local-build-only --test_build-only --work_build --epics_version --message --next_version --rhel_version --windows"
+#    if [[ ${cur} == -* ]] ; then
+#        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+#        return 0
+#    fi
+#
+#    case "${prev}" in
+#        "-a"|"--area")
+#            areas="support ioc matlab python etc tools epics"
+#            COMPREPLY=( $( compgen -W "${areas}" -- ${cur}) )
+#            return 0
+#            ;;
+#        "-b"|"--branch")
+#            return 0;
+#            ;;
+#        "-e"|"--epics_version")
+#            epics_releases="R3.14.11 R3.14.12.1 R3.14.12.2 R3.14.12.3 R3.14.12.7"
+#            COMPREPLY=( $( compgen -W "${epics_releases}" -- ${cur}) )
+#            return 0
+#            ;;
+#        "-m"|"--message")
+#            return 0
+#            ;;
+#        "-r"|"--rhel_version")
+#            rhel_versions="4 5 5_64 6"
+#            COMPREPLY=( $( compgen -W "${rhel_versions}" -- ${cur}) )
+#            return 0
+#            ;;
+#        "-w"|"--windows")
+#            win_versions="32 64"
+#            COMPREPLY=( $( compgen -W "${win_versions}" -- ${cur}) )
+#            return 0
+#            ;;
+#    esac
+#
+#    support_modules=$( _dcs_list_support_modules )
+#    COMPREPLY=( $(${_dcs_compgen} -W "${support_modules}" ${cur}) )
+#    return 0
+#}
 
 _dcs_tab_complete_server_iocs()
 {
@@ -369,8 +371,8 @@ _dcs_find_records()
 }
 
 complete -F _dcs_tab_complete_iocs console
-complete -F _dcs_tab_complete_dls_release dls-release.py
-complete -F _dls_logs_since_release dls-logs-since-release.py
+#complete -F _dcs_tab_complete_dls_release dls-release.py
+#complete -F _dls_logs_since_release dls-logs-since-release.py
 complete -F _dcs_tab_complete_server_iocs ioc-connect
 complete -F _dcs_tab_complete_caget caget
 complete -F _dcs_tab_complete_caput caput
