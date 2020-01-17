@@ -1,0 +1,15 @@
+PROGRAM=dcs-autocomp
+VERSION=0.2
+TAR_FILE=none
+
+build()
+{
+
+    ${CMAKE_BIN}/cmake \
+                       -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON \
+                       -DCMAKE_INSTALL_PREFIX=${TARGET_PREFIX} \
+                       ${BUILD_SCRIPT_DIR}
+    make VERBOSE=1 && make install
+    
+}
+

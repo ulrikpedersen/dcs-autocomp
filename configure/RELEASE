@@ -1,0 +1,2 @@
+TOOLS_SUPPORT=/dls_sw/prod/tools/RHEL7-x86_64
+CMAKE = $(TOOLS_SUPPORT)/cmake/3-9-6
