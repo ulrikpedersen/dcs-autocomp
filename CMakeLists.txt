@@ -7,3 +7,5 @@ find_package(Threads REQUIRED)
 
 add_executable(dcs_compgen main.c db_rec_names.c)
 target_link_libraries(dcs_compgen PRIVATE Threads::Threads)
+install(TARGETS dcs_compgen RUNTIME DESTINATION bin)
+install(FILES complete_console.sh DESTINATION bin RENAME .dcs_complete_console.sh)
