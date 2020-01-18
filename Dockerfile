@@ -15,3 +15,9 @@ RUN cmake3 -DCMAKE_BUILD_TYPE=Debug /src/ &&\
     make VERBOSE=1 && make install &&\
     dcs_compgen -h
 
+WORKDIR /
+RUN tar -xzf /src/testdata/bl13i-db.tar.gz &&\
+    tar -xzf /src/testdata/bl12i-db.tar.gz &&\
+    dcs_compgen --redirector=/src/testdata/redirect_table BL12I | wc &&\
+    dcs_compgen --redirector=/src/testdata/redirect_table BL13I | wc
+
