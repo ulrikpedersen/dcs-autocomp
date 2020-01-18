@@ -791,3 +791,11 @@ dcs_string_list_t *strlst_scan_lines( FILE * fptr, char*(*extract)(const char*) 
 	return list;
 }
 
+void strlist_print(dcs_string_list_t *ioc_list)
+{
+	int i=0;
+	for (i=0; i<ioc_list->num_strings; i++)
+	{
+		fprintf(stdout, "%s\n", ioc_list->strings[i]);
+	}
+}
