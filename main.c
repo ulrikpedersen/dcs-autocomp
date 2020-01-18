@@ -11,16 +11,6 @@
 #include <string.h>
 
 #include "db_rec_names.h"
-int print_strlist(dcs_string_list_t *ioc_list);
-
-int print_strlist(dcs_string_list_t *ioc_list)
-{
-	int i=0;
-	for (i=0; i<ioc_list->num_strings; i++)
-	{
-		fprintf(stdout, "%s\n", ioc_list->strings[i]);
-	}
-}
 
 int main(int argc, char *argv[]) {
 	dcs_options_t *options = calloc(1, sizeof(dcs_options_t));
@@ -58,9 +48,6 @@ int main(int argc, char *argv[]) {
 		strlst_sort(obj.ioc_dirs, NULL);
 		strlst_uniq(obj.ioc_dirs, NULL);
 		drp_find_db_files(&obj);
-
-		// print the list of db files
-		print_strlist(obj.db_files);
 
 		// Remove duplicate DB files with a few steps:
 		//  1: sort the list of db files based on the DB filenames (excluding dir name)
