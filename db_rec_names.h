@@ -35,6 +35,7 @@ void strlst_clear( dcs_string_list_t * str_list );
 char * strlst_concatenate( dcs_string_list_t * str_list, char delimeter);
 dcs_string_list_t *strlst_scan_lines( FILE * fptr, char*(*extract)(const char*) );
 void strlist_print(dcs_string_list_t *ioc_list);
+char* strlist_save_tmp(const char* prefix, dcs_string_list_t* string_list);
 
 typedef enum {dcs_undefined, dcs_db_file, dcs_db_stdin, dcs_redirect_file, dcs_redirect_stdin, dcs_optarg}dcs_input_type;
 typedef struct dcs_options_t
