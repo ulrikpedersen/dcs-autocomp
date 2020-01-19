@@ -60,6 +60,9 @@ int main(int argc, char *argv[]) {
 		//drb_extract_record_names_threaded(
 		//		&obj.records, &obj.components,
 		//		obj.db_files, options->search_word);
+		tmp_str = strlist_save_tmp("", obj.records);
+		free(tmp_str);
+		tmp_str = NULL;
 	}
 
 	// Parse database input from file or stdin

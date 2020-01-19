@@ -799,3 +799,18 @@ void strlist_print(dcs_string_list_t *ioc_list)
 		fprintf(stdout, "%s\n", ioc_list->strings[i]);
 	}
 }
+
+char* strlist_save_tmp(const char* prefix, dcs_string_list_t* string_list)
+{
+	int i;
+	char* fname = mktemp("prefix-XXXXXX");
+	fprintf(stdout, "filename: %s", fname);
+	FILE* fptr = fopen(fname, "wb");
+	for (i=0; i<string_list->num_strings; i++)
+	{
+		fprintf(fptr, "%s\n", string_list->strings[i]);
+	}
+	fclose(fptr);
+	return fname;
+}
+
