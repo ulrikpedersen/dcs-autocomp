@@ -9,6 +9,7 @@
 #define DB_REC_NAMES_H_
 
 #include <stdio.h>
+#include <jmorecfg.h>
 
 typedef struct dbn_string_t {
 	char * data;
@@ -35,7 +36,9 @@ void strlst_clear( dcs_string_list_t * str_list );
 char * strlst_concatenate( dcs_string_list_t * str_list, char delimeter);
 dcs_string_list_t *strlst_scan_lines( FILE * fptr, char*(*extract)(const char*) );
 void strlist_print(dcs_string_list_t *ioc_list);
-char* strlist_save_tmp(const char* prefix, dcs_string_list_t* string_list);
+void strlist_save_file(const char* fname, const dcs_string_list_t* string_list);
+dcs_string_list_t *strlist_load_from_file(const char* fname);
+
 
 typedef enum {dcs_undefined, dcs_db_file, dcs_db_stdin, dcs_redirect_file, dcs_redirect_stdin, dcs_optarg}dcs_input_type;
 typedef struct dcs_options_t
@@ -50,6 +53,8 @@ int dcs_parse_options(int argc, char *argv[], dcs_options_t *options);
 void dcs_free_options(dcs_options_t * options);
 
 typedef struct drp_context_t {
+    char * domain;
+    char * cache_fname;
 	dcs_string_list_t * ioc_dirs;
 	dcs_string_list_t * db_files;
 	dcs_string_list_t * records;
@@ -58,10 +63,12 @@ typedef struct drp_context_t {
 
 // scan through redirector file, looking for IOCs in the domain. Append resulting IOC dirs
 // to ioc_dirs stringlist.
-int drp_find_iocs( drp_context_t * cobj, FILE * redirector_file, const char * domain );
+int drp_find_iocs(drp_context_t *cobj, FILE *redirector_file);
 // Scan through ioc_dirs stringlist and find all database files in each iocs db dir.
 // Append results to stringlist cobj->db_files.
 int drp_find_db_files( drp_context_t * cobj );
+void drp_genereate_cache_fname(drp_context_t * obj, const char * redirect_fname);
+boolean use_cache(drp_context_t *obj, const char * redirect_fname);
 dcs_string_list_t * drb_extract_record_names( dcs_string_list_t *db_files);
 void drb_extract_record_names_threaded( dcs_string_list_t ** records,
 										dcs_string_list_t ** components,
@@ -78,6 +85,7 @@ int dcs_find_db_files(dcs_string_list_t * db_files_out, const char * ioc_dir, co
 char * dcs_scan_lines( FILE * fptr, char*(*extract)(const char*) );
 char * dcs_domain(const char * pvname);
 int dcs_db_filename_strcmp(const void *p1, const void *p2);
+int dcs_cache_records(drp_context_t * obj);
 
 
 
