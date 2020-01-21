@@ -196,7 +196,11 @@ boolean use_cache(drp_context_t *obj, const char * redirect_fname)
 //        perror("DEBUG: stat()");
         return FALSE;
     }
-    return cache_stat.st_mtim.tv_sec > redirect_table_stat.st_mtim.tv_sec;
+    #ifdef __linux__
+        return cache_stat.st_mtim.tv_sec > redirect_table_stat.st_mtim.tv_sec;
+    #elif defined __APPLE__
+        return cache_stat.st_mtimespec.tv_sec > redirect_table_stat.st_mtimespec.tv_sec;
+    #endif
 }
 
 dcs_string_list_t * drb_extract_record_names( dcs_string_list_t *db_files)
