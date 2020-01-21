@@ -9,7 +9,7 @@
 #define DB_REC_NAMES_H_
 
 #include <stdio.h>
-#include <jmorecfg.h>
+#include <stdbool.h>
 
 typedef struct dbn_string_t {
 	char * data;
@@ -68,7 +68,7 @@ int drp_find_iocs(drp_context_t *cobj, FILE *redirector_file);
 // Append results to stringlist cobj->db_files.
 int drp_find_db_files( drp_context_t * cobj );
 void drp_genereate_cache_fname(drp_context_t * obj, const char * redirect_fname);
-boolean use_cache(drp_context_t *obj, const char * redirect_fname);
+bool use_cache(drp_context_t *obj, const char * redirect_fname);
 dcs_string_list_t * drb_extract_record_names( dcs_string_list_t *db_files);
 void drb_extract_record_names_threaded( dcs_string_list_t ** records,
 										dcs_string_list_t ** components,

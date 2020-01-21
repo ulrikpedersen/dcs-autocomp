@@ -179,7 +179,7 @@ void drp_genereate_cache_fname(drp_context_t * obj, const char * redirect_fname)
 //    fprintf(stdout, "DEBUG: filename: %s\n", obj->cache_fname);
 }
 
-boolean use_cache(drp_context_t *obj, const char * redirect_fname)
+bool use_cache(drp_context_t *obj, const char * redirect_fname)
 {
     int ret = 0;
     struct stat redirect_table_stat;
@@ -188,13 +188,13 @@ boolean use_cache(drp_context_t *obj, const char * redirect_fname)
     if (ret != 0){
 //        fprintf(stderr, "DEBUG: unable to stat file: %s\n", redirect_fname);
 //        perror("DEBUG: stat()");
-        return FALSE;
+        return false;
     }
     ret = stat(obj->cache_fname, &cache_stat);
     if (ret != 0) {
 //        fprintf(stderr, "DEBUG: unable to stat file: %s\n", obj->cache_fname);
 //        perror("DEBUG: stat()");
-        return FALSE;
+        return false;
     }
     #ifdef __linux__
         return cache_stat.st_mtim.tv_sec > redirect_table_stat.st_mtim.tv_sec;
