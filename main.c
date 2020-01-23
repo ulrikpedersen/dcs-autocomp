@@ -18,31 +18,40 @@ int main(int argc, char *argv[]) {
 	char * tmp_str = NULL;
 	char * result_str = NULL;
 	FILE * fptr = NULL;
-	char * domain = NULL;
 	drp_context_t obj;
-	obj.db_files = NULL; obj.ioc_dirs = NULL; obj.records = NULL; obj.components = NULL;
+	obj.db_files = NULL; obj.ioc_dirs = NULL; obj.records = NULL; obj.components = NULL; obj.cache_fname = NULL;
 
 	dcs_parse_options(argc, argv, options);
 
-	domain = dcs_domain(options->search_word);
-	if (domain == NULL && options->input_type != dcs_optarg) {
+	obj.domain = dcs_domain(options->search_word);
+	if (obj.domain == NULL && options->input_type != dcs_optarg) {
 		fprintf(stderr, "ERROR: no valid domain found in input: \"%s\"\n", options->search_word);
 		return -1;
 	}
 
 	// Parse through redirector from file or stdin
 	if (options->input_type == dcs_redirect_file) {
-		fptr = fopen(options->redirector_file, "r");
-		if (fptr == NULL) {
-			fprintf(stderr, "ERROR: unable to open file: %s\n", options->redirector_file );
-			return -1;
-		}
+        drp_genereate_cache_fname(&obj, options->redirector_file);
+	    if (use_cache(&obj, options->redirector_file)) {
+	        // read record names from cache file
+//	        fprintf(stderr, "DEBUG: loading from cache\n");
+	        obj.records = strlist_load_from_file(obj.cache_fname);
+        } else {
+	        // Open the redirector file
+            fptr = fopen(options->redirector_file, "r");
+            if (fptr == NULL) {
+//                fprintf(stderr, "ERROR: unable to open file: %s\n", options->redirector_file );
+                return -1;
+            }
+	    }
 	} else if (options->input_type == dcs_redirect_stdin) {
 		fptr = stdin;
 	}
+
 	if (fptr != NULL) {
+//        fprintf(stderr, "DEBUG: Scanning DBs\n");
 		// From the redirector file, find the IOC dirs
-		drp_find_iocs(&obj, fptr, domain);
+        drp_find_iocs(&obj, fptr);
 		fclose(fptr); fptr = NULL;
 		// Remove duplicate IOC dirs
 		strlst_sort(obj.ioc_dirs, NULL);
@@ -60,6 +69,9 @@ int main(int argc, char *argv[]) {
 		//drb_extract_record_names_threaded(
 		//		&obj.records, &obj.components,
 		//		obj.db_files, options->search_word);
+
+//        fprintf(stderr, "DEBUG: storing cache\n");
+		dcs_cache_records(&obj);
 	}
 
 	// Parse database input from file or stdin
@@ -116,7 +128,8 @@ int main(int argc, char *argv[]) {
 	if (result_str != NULL) puts( result_str);
 	if (result_str != NULL) free (result_str);
 	if (tmp_str != NULL) free (tmp_str);
-	if (domain != NULL) free(domain);
+	if (obj.domain != NULL) free(obj.domain);
+	if (obj.cache_fname != NULL) free(obj.cache_fname);
 	dcs_free_options(options);
 	return 0;
 }

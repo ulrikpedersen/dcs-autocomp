@@ -9,6 +9,8 @@
 
 #include <assert.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -137,7 +139,7 @@ void dcs_free_options(dcs_options_t * options)
 	free(options);
 }
 
-int drp_find_iocs( drp_context_t * cobj, FILE * redirector_file, const char * domain )
+int drp_find_iocs(drp_context_t *cobj, FILE *redirector_file)
 {
     char line[MAX_TXT_LENGTH];
     char * ioc_dir = NULL;
@@ -147,7 +149,7 @@ int drp_find_iocs( drp_context_t * cobj, FILE * redirector_file, const char * do
 
 	// Loop through lines of redirector file pointer
     while ( fgets(line, MAX_TXT_LENGTH, redirector_file) != NULL ) {
-    	if (dcs_is_ioc_in_domain(line, domain)) {
+    	if (dcs_is_ioc_in_domain(line, cobj->domain)) {
     		ioc_dir = dcs_extract_ioc_dir(line);
     		strlst_add_string_ptr( cobj->ioc_dirs, ioc_dir );
     	}
@@ -164,6 +166,41 @@ int drp_find_db_files( drp_context_t * cobj )
 		dcs_find_db_files(cobj->db_files, cobj->ioc_dirs->strings[i], "db/*IOC*.db");
 	}
 	return 0;
+}
+
+void drp_genereate_cache_fname(drp_context_t * obj, const char * redirect_fname)
+{
+    const char * user = getenv("USER");
+    const char * path = "/tmp/";
+    const char * postfix = "-rec";
+    size_t fname_size = strlen(path) + strlen(obj->domain) + 1 + strlen(user) + strlen(postfix) + 1;
+    obj->cache_fname = calloc(fname_size, sizeof(char));
+    sprintf(obj->cache_fname, "%s%s-%s%s", path, user, obj->domain, postfix);
+//    fprintf(stdout, "DEBUG: filename: %s\n", obj->cache_fname);
+}
+
+bool use_cache(drp_context_t *obj, const char * redirect_fname)
+{
+    int ret = 0;
+    struct stat redirect_table_stat;
+    struct stat cache_stat;
+    ret = stat(redirect_fname, &redirect_table_stat);
+    if (ret != 0){
+//        fprintf(stderr, "DEBUG: unable to stat file: %s\n", redirect_fname);
+//        perror("DEBUG: stat()");
+        return false;
+    }
+    ret = stat(obj->cache_fname, &cache_stat);
+    if (ret != 0) {
+//        fprintf(stderr, "DEBUG: unable to stat file: %s\n", obj->cache_fname);
+//        perror("DEBUG: stat()");
+        return false;
+    }
+    #ifdef __linux__
+        return cache_stat.st_mtim.tv_sec > redirect_table_stat.st_mtim.tv_sec;
+    #elif defined __APPLE__
+        return cache_stat.st_mtimespec.tv_sec > redirect_table_stat.st_mtimespec.tv_sec;
+    #endif
 }
 
 dcs_string_list_t * drb_extract_record_names( dcs_string_list_t *db_files)
@@ -680,6 +717,12 @@ int dcs_db_filename_strcmp(const void *p1, const void *p2)
 	return result;
 }
 
+int dcs_cache_records(drp_context_t * obj)
+{
+    strlist_save_file(obj->cache_fname, obj->records);
+    return 0;
+}
+
 static int _strcmp(const void *p1, const void *p2)
 {
 	static int counter = 0;
@@ -791,3 +834,35 @@ dcs_string_list_t *strlst_scan_lines( FILE * fptr, char*(*extract)(const char*) 
 	return list;
 }
 
+void strlist_print(dcs_string_list_t *ioc_list)
+{
+	int i=0;
+	for (i=0; i<ioc_list->num_strings; i++)
+	{
+		fprintf(stdout, "%s\n", ioc_list->strings[i]);
+	}
+}
+
+void strlist_save_file(const char *fname, const dcs_string_list_t *string_list) {
+    int i;
+    FILE* fptr = fopen(fname, "wb");
+    for (i=0; i<string_list->num_strings; i++)
+    {
+        fprintf(fptr, "%s\n", string_list->strings[i]);
+    }
+    fclose(fptr);
+}
+
+dcs_string_list_t *strlist_load_from_file(const char* fname){
+    dcs_string_list_t *result = NULL;
+    int i;
+    char line[256];
+    size_t line_max = 256;
+    FILE* fptr = fopen(fname, "r");
+    result = strlst_init(65536);
+    while (fgets(line, line_max, fptr) != NULL) {
+        strlst_add_string_cpy(result, line);
+    }
+    fclose(fptr);
+    return result;
+}
