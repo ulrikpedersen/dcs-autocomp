@@ -67,6 +67,7 @@ int drp_find_iocs(drp_context_t *cobj, FILE *redirector_file);
 // Scan through ioc_dirs stringlist and find all database files in each iocs db dir.
 // Append results to stringlist cobj->db_files.
 int drp_find_db_files( drp_context_t * cobj );
+dcs_string_list_t * drb_find_cwd_ioc_records();
 void drp_genereate_cache_fname(drp_context_t * obj, const char * redirect_fname);
 bool use_cache(drp_context_t *obj, const char * redirect_fname);
 dcs_string_list_t * drb_extract_record_names( dcs_string_list_t *db_files);

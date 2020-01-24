@@ -168,6 +168,19 @@ int drp_find_db_files( drp_context_t * cobj )
 	return 0;
 }
 
+dcs_string_list_t * drb_find_cwd_ioc_records()
+{
+    int i=0;
+    dcs_string_list_t * db_files = strlst_init(10);
+    dcs_string_list_t * new_records = NULL;
+
+    dcs_find_db_files(db_files, ".", "db/*.db");
+    //fprintf(stderr, "DEBUG: Found db files: %d\n", db_files->num_strings);
+    new_records = drb_extract_record_names(db_files);
+//    fprintf(stderr, "DEBUG: Found local records: %d\n", new_records->num_strings);
+    return new_records;
+}
+
 void drp_genereate_cache_fname(drp_context_t * obj, const char * redirect_fname)
 {
     const char * user = getenv("USER");

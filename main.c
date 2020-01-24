@@ -74,6 +74,11 @@ int main(int argc, char *argv[]) {
 		dcs_cache_records(&obj);
 	}
 
+	// Now add any local records if cwd is an ioc dir with db/*.db file(s)
+	// Avoiding all caching here as this is typically desired in development mode.
+	dcs_string_list_t * new_records = drb_find_cwd_ioc_records();
+	strlst_merge(obj.records, new_records);
+
 	// Parse database input from file or stdin
 	if (options->input_type == dcs_db_file) {
 		fptr = fopen(options->database_file, "r");
