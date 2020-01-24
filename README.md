@@ -84,3 +84,23 @@ environment, place the following command in your ~/.bash_profile:
 ```shell script
 source /dls_sw/prod/tools/RHEL7-x86_64/defaults/bin/.dcs_complete_console.sh
 ```
+
+Process Variable Autocompletion
+===============================
+
+EPICS process variables (PVs) can be autocompleted for CLI tools: caget, caput, camonitor. The PVs are identified by 
+scanning through IOC databases for record names (autocomplete for sub-record fields is no supported - nice TODO though...).
+
+Relevant IOCs to scan are identified through the redirector table and in order to achieve a snappy response, some 
+optimisations are done. In case of difficulties (i.e. a certain PV name does not appear in the autocomplete list), please
+keep the following in mind:
+
+ * Only IOCs/versions defined in the redirector table (i.e. configure-ioc) are scanned for PV record names
+ * Only IOCs in the redirector that match the first (domain) part of the PV name (i.e. BL12I- or FE23I) are actively
+scanned for PV names
+ * As an optimisation, caching is implemented per domain (for each user)
+   * IOC/DBs are re-scanned if the redirector timestamp (last change) is newer than the cache file timestamp
+   * Cache files with lists of records are stored in `/tmp/<user>-<domain>-rec`
+ * The current working directory (cwd) is always scanned for records in `./db/*.db` files
+   * This is to enable auto-complete on local development IOCs that have not yet made it to the redirector
+   * Caching is **not** implemented for these local databases/records.
