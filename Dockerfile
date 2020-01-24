@@ -16,3 +16,4 @@ RUN cmake3 -DCMAKE_BUILD_TYPE=Debug /src/ &&\
     dcs_compgen -h
 
 CMD ["/bin/sh -c"]
+
