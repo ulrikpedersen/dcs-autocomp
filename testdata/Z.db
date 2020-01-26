@@ -1,4 +1,0 @@
-record(ao, "BL12I-AL-ATTN-02:Z") {
-  field(VAL, "0")
-  field(PINI, "YES")
-}
